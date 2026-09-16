@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KPI Intelligence Engine</title>
+<style>
+  :root {
+    --bg: #0f1117; --surface: #1a1d27; --border: #2a2d3a;
+    --text: #e4e4e7; --muted: #71717a; --accent: #6366f1;
+    --green: #22c55e; --yellow: #eab308; --red: #ef4444; --orange: #f97316;
+    --blue: #3b82f6;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  header { padding: 24px 32px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 16px; }
+  header h1 { font-size: 18px; font-weight: 600; }
+  header span { color: var(--muted); font-size: 13px; }
+  .badge { background: var(--accent); color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 32px; }
+
+  .controls { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 24px; margin-bottom: 24px; }
+  .controls h2 { font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
+  .form-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 160px; }
+  .form-group label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .form-group input, .form-group select {
+    background: var(--bg); border: 1px solid var(--border); color: var(--text);
+    padding: 10px 12px; border-radius: 6px; font-family: inherit; font-size: 14px;
+  }
+  .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--accent); }
+  .btn {
+    background: var(--accent); color: #fff; border: none; padding: 10px 24px;
+    border-radius: 6px; font-family: inherit; font-size: 14px; font-weight: 600;
+    cursor: pointer; white-space: nowrap; transition: opacity 0.2s;
+  }
+  .btn:hover { opacity: 0.85; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .loading { display: none; text-align: center; padding: 48px; color: var(--muted); }
+  .loading.active { display: block; }
+  .spinner { display: inline-block; width: 24px; height: 24px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 12px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .result { display: none; }
+  .result.active { display: block; }
+
+  .section { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 16px; }
+  .section-title { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .section-title .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  .status-bar { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+  .status-chip { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid; }
+  .chip-material { background: rgba(34,197,94,0.1); border-color: var(--green); color: var(--green); }
+  .chip-not-material { background: rgba(113,113,122,0.1); border-color: var(--muted); color: var(--muted); }
+  .chip-abstain { background: rgba(234,179,8,0.1); border-color: var(--yellow); color: var(--yellow); }
+  .chip-high { background: rgba(34,197,94,0.15); border-color: var(--green); color: var(--green); }
+  .chip-medium { background: rgba(59,130,246,0.15); border-color: var(--blue); color: var(--blue); }
+  .chip-low { background: rgba(249,115,22,0.15); border-color: var(--orange); color: var(--orange); }
+  .chip-abstain-conf { background: rgba(234,179,8,0.15); border-color: var(--yellow); color: var(--yellow); }
+
+  .hypothesis-card { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 14px; margin-bottom: 10px; }
+  .hypothesis-card.winner { border-color: var(--green); }
+  .hypothesis-card.refuted { border-color: var(--red); opacity: 0.6; }
+  .hyp-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .hyp-type { font-size: 13px; font-weight: 600; }
+  .hyp-score { font-size: 12px; color: var(--muted); }
+  .hyp-detail { font-size: 12px; color: var(--muted); line-height: 1.6; }
+  .hyp-badge { font-size: 10px; padding: 2px 6px; border-radius: 3px; font-weight: 700; text-transform: uppercase; }
+  .badge-winner { background: var(--green); color: #000; }
+  .badge-refuted { background: var(--red); color: #fff; }
+
+  .rec-box { background: var(--bg); border: 1px solid var(--green); border-radius: 6px; padding: 16px; }
+  .rec-box.unavailable { border-color: var(--muted); }
+  .rec-row { display: flex; gap: 8px; margin-bottom: 6px; font-size: 13px; }
+  .rec-label { color: var(--muted); min-width: 100px; }
+
+  .narrative-box { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 14px; margin-bottom: 10px; }
+  .narrative-label { font-size: 11px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; font-weight: 600; }
+  .narrative-text { font-size: 13px; line-height: 1.7; }
+
+  .steps-list { display: flex; gap: 6px; flex-wrap: wrap; }
+  .step-chip { background: var(--bg); border: 1px solid var(--border); padding: 4px 10px; border-radius: 4px; font-size: 11px; color: var(--muted); }
+
+  .error-box { background: rgba(239,68,68,0.1); border: 1px solid var(--red); border-radius: 6px; padding: 16px; color: var(--red); font-size: 13px; display: none; }
+  .error-box.active { display: block; }
+
+  .meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+  .meta-item { text-align: center; }
+  .meta-val { font-size: 22px; font-weight: 700; color: var(--accent); }
+  .meta-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>KPI Intelligence Engine</h1>
+  <span class="badge">DEMO</span>
+  <span>Case File Investigation Console</span>
+</header>
+
+<div class="container">
+  <div class="controls">
+    <h2>New Investigation</h2>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Scenario</label>
+        <select id="scenarioSelect"><option value="">Loading scenarios...</option></select>
+      </div>
+      <div class="form-group" style="max-width:100px">
+        <label>Store</label>
+        <input type="number" id="storeInput" placeholder="18">
+      </div>
+      <div class="form-group" style="max-width:100px">
+        <label>Dept</label>
+        <input type="number" id="deptInput" placeholder="optional">
+      </div>
+      <div class="form-group" style="max-width:160px">
+        <label>Target Date</label>
+        <input type="text" id="dateInput" placeholder="2011-09-02">
+      </div>
+      <div class="form-group" style="max-width:120px">
+        <label>&nbsp;</label>
+        <button class="btn" id="runBtn" onclick="runInvestigation()">Investigate</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="error-box" id="errorBox"></div>
+
+  <div class="loading" id="loadingBox">
+    <div class="spinner"></div>
+    <div>Running diagnostic pipeline...</div>
+  </div>
+
+  <div class="result" id="resultBox">
+    <!-- Status Bar -->
+    <div class="status-bar" id="statusBar"></div>
+
+    <!-- Pipeline Overview -->
+    <div class="section">
+      <div class="section-title"><span class="dot" style="background:var(--accent)"></span>Pipeline Overview</div>
+      <div class="meta-grid" id="metaGrid"></div>
+      <div style="margin-top:12px">
+        <div class="section-title" style="margin-bottom:8px">Steps Executed</div>
+        <div class="steps-list" id="stepsList"></div>
+      </div>
+    </div>
+
+    <!-- Hypotheses -->
+    <div class="section">
+      <div class="section-title"><span class="dot" style="background:var(--blue)"></span>Hypotheses Evaluated</div>
+      <div id="hypothesesList"></div>
+    </div>
+
+    <!-- Confidence -->
+    <div class="section">
+      <div class="section-title"><span class="dot" style="background:var(--yellow)"></span>Confidence Assessment</div>
+      <div id="confidenceDetails"></div>
+    </div>
+
+    <!-- Recommendation -->
+    <div class="section">
+      <div class="section-title"><span class="dot" style="background:var(--green)"></span>Recommendation</div>
+      <div id="recommendationBox"></div>
+    </div>
+
+    <!-- Narratives -->
+    <div class="section">
+      <div class="section-title"><span class="dot" style="background:var(--orange)"></span>Persona Narratives</div>
+      <div id="narrativesBox"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'http://localhost:8000';
+
+async function loadScenarios() {
+  try {
+    const res = await fetch(`${API}/api/stores`);
+    const data = await res.json();
+    const sel = document.getElementById('scenarioSelect');
+    sel.innerHTML = '<option value="">-- pick a demo scenario --</option>';
+    data.scenarios.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = JSON.stringify(s);
+      opt.textContent = `Store ${s.store} — ${s.label}`;
+      sel.appendChild(opt);
+    });
+  } catch (e) {
+    document.getElementById('scenarioSelect').innerHTML = '<option value="">API not running</option>';
+  }
+}
+
+document.getElementById('scenarioSelect').addEventListener('change', function() {
+  if (!this.value) return;
+  const s = JSON.parse(this.value);
+  document.getElementById('storeInput').value = s.store;
+  document.getElementById('deptInput').value = s.dept || '';
+  document.getElementById('dateInput').value = s.target_date || '';
+});
+
+async function runInvestigation() {
+  const store = parseInt(document.getElementById('storeInput').value);
+  if (!store) return;
+
+  const dept = document.getElementById('deptInput').value ? parseInt(document.getElementById('deptInput').value) : null;
+  const date = document.getElementById('dateInput').value || null;
+
+  document.getElementById('errorBox').className = 'error-box';
+  document.getElementById('resultBox').className = 'result';
+  document.getElementById('loadingBox').className = 'loading active';
+  document.getElementById('runBtn').disabled = true;
+
+  try {
+    const res = await fetch(`${API}/api/investigate`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ store, dept, target_date: date, use_llm: true }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Investigation failed');
+    renderResult(data);
+  } catch (e) {
+    document.getElementById('errorBox').textContent = `Error: ${e.message}`;
+    document.getElementById('errorBox').className = 'error-box active';
+  } finally {
+    document.getElementById('loadingBox').className = 'loading';
+    document.getElementById('runBtn').disabled = false;
+  }
+}
+
+function renderResult(d) {
+  // Status chips
+  const bar = document.getElementById('statusBar');
+  const mat = d.materiality?.verdict || d.status;
+  const matClass = mat === 'MATERIAL' ? 'chip-material' : mat === 'ABSTAIN' ? 'chip-abstain' : 'chip-not-material';
+  const tier = d.confidence?.confidence_tier || 'N/A';
+  const tierClass = tier === 'HIGH' ? 'chip-high' : tier === 'MEDIUM' ? 'chip-medium' : tier === 'LOW' ? 'chip-low' : 'chip-abstain-conf';
+  bar.innerHTML = `
+    <span class="status-chip ${matClass}">${mat}</span>
+    <span class="status-chip ${tierClass}">Confidence: ${tier}</span>
+    <span class="status-chip" style="border-color:var(--muted);color:var(--muted)">Store ${d.store}</span>
+  `;
+
+  // Meta grid
+  const matResult = d.materiality || {};
+  document.getElementById('metaGrid').innerHTML = `
+    <div class="meta-item"><div class="meta-val">${d.steps_taken?.length || 0}</div><div class="meta-label">Steps Run</div></div>
+    <div class="meta-item"><div class="meta-val">${d.hypotheses?.length || 0}</div><div class="meta-label">Hypotheses</div></div>
+    <div class="meta-item"><div class="meta-val">${d.confidence?.confidence_score != null ? d.confidence.confidence_score.toFixed(2) : '—'}</div><div class="meta-label">Score</div></div>
+    <div class="meta-item"><div class="meta-val">${d.concentration_pattern || '—'}</div><div class="meta-label">Pattern</div></div>
+  `;
+
+  // Steps
+  document.getElementById('stepsList').innerHTML = (d.steps_taken || []).map(s => `<span class="step-chip">${s}</span>`).join('');
+
+  // Hypotheses
+  const hypDiv = document.getElementById('hypothesesList');
+  if (!d.hypotheses?.length) {
+    hypDiv.innerHTML = '<div style="color:var(--muted);font-size:13px">No hypotheses generated.</div>';
+  } else {
+    hypDiv.innerHTML = d.hypotheses.map(h => {
+      const isWinner = h.is_winning;
+      const isRefuted = h.refuted;
+      const cls = isWinner ? 'winner' : isRefuted ? 'refuted' : '';
+      const badge = isWinner ? '<span class="hyp-badge badge-winner">WINNER</span>' : isRefuted ? '<span class="hyp-badge badge-refuted">REFUTED</span>' : '';
+      return `
+        <div class="hypothesis-card ${cls}">
+          <div class="hyp-header">
+            <span class="hyp-type">${h.driver_type || h.category || 'Unknown'}</span>
+            <span class="hyp-score">Score: ${h.net_support_score ?? h.score ?? '—'} | Support: ${h.support_count ?? 0} | Refute: ${h.refutation_count ?? 0}</span>
+            ${badge}
+          </div>
+          <div class="hyp-detail">
+            ${h.description || h.ticket_summary || ''}
+            ${h.contributing_departments?.length ? '<br>Depts: ' + h.contributing_departments.join(', ') : ''}
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  // Confidence
+  const conf = d.confidence || {};
+  document.getElementById('confidenceDetails').innerHTML = `
+    <div class="meta-grid" style="margin-bottom:12px">
+      <div class="meta-item"><div class="meta-val">${conf.confidence_score != null ? conf.confidence_score.toFixed(3) : '—'}</div><div class="meta-label">Overall Score</div></div>
+      <div class="meta-item"><div class="meta-val">${conf.agreement_score != null ? conf.agreement_score.toFixed(3) : '—'}</div><div class="meta-label">Agreement</div></div>
+      <div class="meta-item"><div class="meta-val">${conf.match_strength != null ? conf.match_strength.toFixed(3) : '—'}</div><div class="meta-label">Match Strength</div></div>
+      <div class="meta-item"><div class="meta-val">${conf.self_consistency != null ? conf.self_consistency.toFixed(3) : '—'}</div><div class="meta-label">Self-Consistency</div></div>
+    </div>
+    ${conf.abstention_reason ? `<div style="color:var(--yellow);font-size:12px">Abstention reason: ${conf.abstention_reason}</div>` : ''}
+  `;
+
+  // Recommendation
+  const rec = d.recommendation || {};
+  const recBox = document.getElementById('recommendationBox');
+  if (rec.recommendation_available) {
+    recBox.innerHTML = `
+      <div class="rec-box">
+        <div class="rec-row"><span class="rec-label">Driver</span>${rec.driver}</div>
+        <div class="rec-row"><span class="rec-label">Action</span>${rec.action}</div>
+        <div class="rec-row"><span class="rec-label">Owner</span>${rec.owner}</div>
+        <div class="rec-row"><span class="rec-label">Impact</span>${rec.expected_impact}</div>
+        <div class="rec-row"><span class="rec-label">Monitoring</span>${rec.monitoring_plan}</div>
+      </div>`;
+  } else {
+    recBox.innerHTML = `<div class="rec-box unavailable"><div style="color:var(--muted)">No recommendation — ${rec.reason || 'confidence insufficient'}</div></div>`;
+  }
+
+  // Narratives
+  const nar = d.narratives || {};
+  document.getElementById('narrativesBox').innerHTML = `
+    <div class="narrative-box">
+      <div class="narrative-label">Store Manager ${nar._meta?.store_manager_source ? '(' + nar._meta.store_manager_source + ')' : ''}</div>
+      <div class="narrative-text">${nar.store_manager || '—'}</div>
+    </div>
+    <div class="narrative-box">
+      <div class="narrative-label">Regional VP ${nar._meta?.regional_vp_source ? '(' + nar._meta.regional_vp_source + ')' : ''}</div>
+      <div class="narrative-text">${nar.regional_vp || '—'}</div>
+    </div>`;
+
+  document.getElementById('resultBox').className = 'result active';
+}
+
+loadScenarios();
+</script>
+</body>
+</html>

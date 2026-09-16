@@ -292,7 +292,7 @@ Nothing in the UI or API is scripted or pre-computed — every result you see th
 ├── 11_telemetry/             Latency logging, cost tracking, LLM/non-LLM ledger
 ├── 12_scenarios/             All 5 demo scenarios, runnable individually or as one
 ├── api/                      FastAPI wrapper — investigate, secure, feedback, telemetry
-├── ui/                       Reference investigation console (planned)
+├── ui/                       Reference investigation console (single-file, no build step)
 └── docs/                     Business proposal, architecture diagram
 ```
 
