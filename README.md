@@ -259,7 +259,7 @@ Nothing in the UI or API is scripted or pre-computed — every result you see th
 <td><b>Statistics</b></td><td><code>statsmodels</code> (STL decomposition), custom control-limit implementation</td>
 </tr>
 <tr>
-<td><b>LLM</b></td><td>Anthropic Claude — narrative synthesis only, automatic template fallback</td>
+<td><b>LLM</b></td><td>Groq (llama-3.3-70b) — narrative synthesis only, automatic template fallback</td>
 </tr>
 <tr>
 <td><b>API</b></td><td>FastAPI, full interactive documentation</td>
@@ -330,7 +330,7 @@ Then open `ui/index.html` in a browser — it connects to the running API automa
 
 **Optional — enable live LLM narratives**
 
-Add an `ANTHROPIC_API_KEY` to a `.env` file at the project root. Without one, the system runs exactly the same, using deterministic template narratives instead.
+Add a `GROQ_API_KEY` to a `.env` file at the project root. Without one, the system runs exactly the same, using deterministic template narratives instead.
 
 <br>
 

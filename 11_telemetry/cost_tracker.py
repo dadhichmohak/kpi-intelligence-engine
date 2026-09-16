@@ -16,9 +16,8 @@ TELEMETRY_LOG_PATH = PROJECT_ROOT / "11_telemetry" / "telemetry.log"
 # Rough per-1K-token pricing for reference, in case/when an LLM call
 # is added — update to match whichever model actually gets wired in.
 PRICING_PER_1K_TOKENS = {
-    "claude-haiku": {"input": 0.0008, "output": 0.004},
-    "claude-sonnet": {"input": 0.003, "output": 0.015},
-    "gpt-4o-mini": {"input": 0.00015, "output": 0.0006},
+    "llama-3.3-70b-versatile": {"input": 0.00059, "output": 0.00079},
+    "mixtral-8x7b-32768": {"input": 0.00024, "output": 0.00024},
 }
 
 

@@ -30,4 +30,3 @@ pydantic
 
 # Utilities
 tiktoken
-anthropic

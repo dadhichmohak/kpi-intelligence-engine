@@ -4,7 +4,7 @@ Generates persona-specific narratives from the same underlying
 investigation + confidence + recommendation data.
 
 Two-tier approach:
-  1. If an LLM is available (ANTHROPIC_API_KEY set), uses it to phrase
+  1. If an LLM is available (GROQ_API_KEY set), uses it to phrase
      the already-computed facts naturally — the LLM does NOT decide
      anything, it only rephrases what Phases 2-7 already determined.
   2. If no LLM is available, or the call fails for any reason, falls
@@ -165,7 +165,7 @@ def _log_llm_result(metadata: dict, step_name: str):
                        metadata={"success": metadata.get("success", False)})
     if metadata.get("success"):
         log_llm_call(
-            model="claude-haiku-4-5",
+            model="llama-3.3-70b-versatile",
             input_tokens=metadata.get("input_tokens", 0),
             output_tokens=metadata.get("output_tokens", 0),
             step_name=step_name,
