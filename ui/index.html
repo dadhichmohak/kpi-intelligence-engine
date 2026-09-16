@@ -9,7 +9,7 @@
 <style>
   :root {
     --bg: #09090b; --surface: #18181b; --surface-2: #1f1f23; --border: #27272a;
-    --text: #fafafa; --muted: #a1a1aa; --dim: #52525b;
+    --text: #fafafa; --muted: #a1aaa1; --dim: #52525b;
     --accent: #818cf8; --accent-dim: rgba(129,140,248,0.12);
     --green: #4ade80; --green-dim: rgba(74,222,128,0.1);
     --yellow: #facc15; --yellow-dim: rgba(250,204,21,0.1);
@@ -36,8 +36,9 @@
   .controls { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 24px; }
   .controls-label { font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; margin-bottom: 16px; }
   .form-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
-  .form-group { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 140px; }
+  .form-group { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 140px; }
   .form-group label { font-size: 12px; color: var(--muted); font-weight: 500; }
+  .form-group .field-desc { font-size: 10px; color: var(--dim); line-height: 1.4; }
   .form-group input, .form-group select {
     background: var(--bg); border: 1px solid var(--border); color: var(--text);
     padding: 9px 12px; border-radius: var(--radius-sm); font-family: inherit; font-size: 13px;
@@ -80,14 +81,16 @@
 
   /* ── Section ── */
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; margin-bottom: 14px; }
-  .card-title { font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .card-title { font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
   .card-title .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .card-desc { font-size: 12px; color: var(--dim); margin-bottom: 14px; line-height: 1.5; }
 
   /* ── Stats Grid ── */
-  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border-radius: var(--radius-sm); overflow: hidden; margin-bottom: 16px; }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border-radius: var(--radius-sm); overflow: hidden; margin-bottom: 12px; }
   .stat { background: var(--surface); padding: 16px 12px; text-align: center; }
   .stat-val { font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 700; color: var(--accent); }
   .stat-label { font-size: 11px; color: var(--dim); margin-top: 4px; }
+  .stat-tip { font-size: 10px; color: var(--dim); margin-top: 2px; opacity: 0.7; }
 
   /* ── Steps ── */
   .steps { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -100,7 +103,7 @@
   .hyp.refuted { opacity: 0.45; }
   .hyp-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
   .hyp-name { font-size: 13px; font-weight: 600; }
-  .hyp-meta { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--dim); display: flex; gap: 10px; flex-shrink: 0; }
+  .hyp-meta { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--dim); display: flex; gap: 10px; flex-shrink: 0; align-items: center; }
   .hyp-desc { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.6; }
   .tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; }
   .tag-win { background: var(--green); color: #000; }
@@ -111,6 +114,7 @@
   .conf-cell { background: var(--surface); padding: 14px 10px; text-align: center; }
   .conf-val { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 700; }
   .conf-label { font-size: 10px; color: var(--dim); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .conf-tip { font-size: 10px; color: var(--dim); margin-top: 2px; opacity: 0.7; }
   .abstain-note { margin-top: 12px; padding: 10px 14px; background: var(--yellow-dim); border: 1px solid rgba(250,204,21,0.2); border-radius: var(--radius-sm); font-size: 12px; color: var(--yellow); }
 
   /* ── Recommendation ── */
@@ -132,6 +136,13 @@
   .error { background: var(--red-dim); border: 1px solid rgba(248,113,113,0.3); border-radius: var(--radius-sm); padding: 14px 18px; color: var(--red); font-size: 13px; display: none; margin-bottom: 14px; }
   .error.active { display: block; }
 
+  /* ── Legend ── */
+  .legend { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 22px; margin-bottom: 14px; }
+  .legend-title { font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; margin-bottom: 10px; }
+  .legend-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; }
+  .legend-item { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .legend-item strong { color: var(--text); font-weight: 600; }
+
   /* ── Responsive ── */
   @media (max-width: 640px) {
     .stats, .conf-grid { grid-template-columns: repeat(2, 1fr); }
@@ -139,6 +150,7 @@
     .form-group { min-width: 100%; }
     header { padding: 16px; }
     .container { padding: 20px 16px; }
+    .legend-grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -152,23 +164,28 @@
 </header>
 
 <div class="container">
+  <!-- ── Input Controls ── -->
   <div class="controls">
     <div class="controls-label">New Investigation</div>
     <div class="form-row">
       <div class="form-group">
         <label>Scenario</label>
+        <span class="field-desc">Pre-built demo cases with known anomalies</span>
         <select id="scenarioSelect"><option value="">Loading...</option></select>
       </div>
       <div class="form-group" style="max-width:90px">
         <label>Store</label>
-        <input type="number" id="storeInput" placeholder="18">
+        <span class="field-desc">Store ID (1-45)</span>
+        <input type="number" id="storeInput" placeholder="18" min="1" max="45">
       </div>
       <div class="form-group" style="max-width:90px">
         <label>Dept</label>
-        <input type="number" id="deptInput" placeholder="opt">
+        <span class="field-desc">Dept ID (optional, 1-81)</span>
+        <input type="number" id="deptInput" placeholder="opt" min="1" max="81">
       </div>
       <div class="form-group" style="max-width:170px">
         <label>Date</label>
+        <span class="field-desc">Week to investigate</span>
         <input type="date" id="dateInput">
         <span class="hint" onclick="document.getElementById('dateInput').value=''">clear</span>
       </div>
@@ -179,16 +196,62 @@
     </div>
   </div>
 
+  <!-- ── Field Legend ── -->
+  <div class="legend">
+    <div class="legend-title">What Each Field Means</div>
+    <div class="legend-grid">
+      <div class="legend-item"><strong>Scenario</strong> — Pre-loaded demo cases. Each tests a different system behavior (clean diagnosis, contradictory evidence, sparse data, security filtering).</div>
+      <div class="legend-item"><strong>Store</strong> — The retail store to investigate. Dataset has 45 stores. Each store maps to a region (North/South/East/West).</div>
+      <div class="legend-item"><strong>Dept</strong> — Optional. Narrow investigation to a specific department within the store (81 depts). Leave empty to investigate store-level.</div>
+      <div class="legend-item"><strong>Date</strong> — The specific week to analyze. The system looks at the KPI movement for that week vs. historical baseline. Leave empty for latest.</div>
+    </div>
+  </div>
+
   <div class="error" id="errorBox"></div>
   <div class="loading" id="loadingBox"><div class="spinner"></div><div class="loading-text">Running diagnostic pipeline...</div></div>
 
+  <!-- ── Results ── -->
   <div class="result" id="resultBox">
     <div class="status-bar" id="statusBar"></div>
-    <div class="card" id="overviewCard"><div class="card-title"><span class="dot" style="background:var(--accent)"></span>Overview</div><div class="stats" id="statsGrid"></div><div class="steps" id="stepsList"></div></div>
-    <div class="card"><div class="card-title"><span class="dot" style="background:var(--blue)"></span>Hypotheses</div><div id="hypList"></div></div>
-    <div class="card"><div class="card-title"><span class="dot" style="background:var(--yellow)"></span>Confidence</div><div id="confBox"></div></div>
-    <div class="card"><div class="card-title"><span class="dot" style="background:var(--green)"></span>Recommendation</div><div id="recBox"></div></div>
-    <div class="card"><div class="card-title"><span class="dot" style="background:var(--orange)"></span>Narratives</div><div id="narBox"></div></div>
+
+    <!-- Overview -->
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:var(--accent)"></span>Overview</div>
+      <div class="card-desc">Pipeline execution summary — how many steps ran, what the system found.</div>
+      <div class="stats" id="statsGrid"></div>
+      <div style="margin-bottom:6px">
+        <span style="font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:0.8px;font-weight:600">Pipeline Steps</span>
+      </div>
+      <div class="steps" id="stepsList"></div>
+    </div>
+
+    <!-- Hypotheses -->
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:var(--blue)"></span>Hypotheses</div>
+      <div class="card-desc">Competing explanations the system evaluated. Each scores evidence support vs. contradiction. <strong>Winner</strong> = highest net score. <strong>Refuted</strong> = contradicting evidence found.</div>
+      <div id="hypList"></div>
+    </div>
+
+    <!-- Confidence -->
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:var(--yellow)"></span>Confidence</div>
+      <div class="card-desc">How trustworthy the diagnosis is. Three independent signals are weighted into an overall score. Tiers: HIGH (>=0.75), MEDIUM (>=0.5), LOW (>=0.3), ABSTAIN (<0.3).</div>
+      <div id="confBox"></div>
+    </div>
+
+    <!-- Recommendation -->
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:var(--green)"></span>Recommendation</div>
+      <div class="card-desc">Structured action derived from the winning hypothesis. Only generated when confidence is HIGH or MEDIUM. Includes owner and monitoring plan.</div>
+      <div id="recBox"></div>
+    </div>
+
+    <!-- Narratives -->
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:var(--orange)"></span>Narratives</div>
+      <div class="card-desc">Same facts, framed for different audiences. Store Manager = operational, action-first. Regional VP = strategic, business-impact framed. Source shows "llm" or "template".</div>
+      <div id="narBox"></div>
+    </div>
   </div>
 </div>
 
@@ -258,10 +321,10 @@ function render(d) {
     <span class="chip chip-muted">Store ${d.store}${d.dept ? ' / Dept ' + d.dept : ''}</span>`;
 
   document.getElementById('statsGrid').innerHTML = `
-    <div class="stat"><div class="stat-val">${d.steps_taken?.length || 0}</div><div class="stat-label">Steps</div></div>
-    <div class="stat"><div class="stat-val">${d.hypotheses?.length || 0}</div><div class="stat-label">Hypotheses</div></div>
-    <div class="stat"><div class="stat-val">${d.confidence?.confidence_score != null ? d.confidence.confidence_score.toFixed(2) : '—'}</div><div class="stat-label">Score</div></div>
-    <div class="stat"><div class="stat-val" style="font-size:13px">${d.concentration_pattern || '—'}</div><div class="stat-label">Pattern</div></div>`;
+    <div class="stat"><div class="stat-val">${d.steps_taken?.length || 0}</div><div class="stat-label">Steps</div><div class="stat-tip">Pipeline stages executed</div></div>
+    <div class="stat"><div class="stat-val">${d.hypotheses?.length || 0}</div><div class="stat-label">Hypotheses</div><div class="stat-tip">Candidate explanations</div></div>
+    <div class="stat"><div class="stat-val">${d.confidence?.confidence_score != null ? d.confidence.confidence_score.toFixed(2) : '—'}</div><div class="stat-label">Score</div><div class="stat-tip">0-1 confidence rating</div></div>
+    <div class="stat"><div class="stat-val" style="font-size:13px">${d.concentration_pattern || '—'}</div><div class="stat-label">Pattern</div><div class="stat-tip">How many depts drove the change</div></div>`;
 
   document.getElementById('stepsList').innerHTML = (d.steps_taken || []).map(s => `<span class="step">${s}</span>`).join('');
 
@@ -269,16 +332,16 @@ function render(d) {
   document.getElementById('hypList').innerHTML = hyps.length ? hyps.map(h => {
     const cls = h.is_winning ? 'winner' : h.refuted ? 'refuted' : '';
     const tag = h.is_winning ? '<span class="tag tag-win">Winner</span>' : h.refuted ? '<span class="tag tag-ref">Refuted</span>' : '';
-    return `<div class="hyp ${cls}"><div class="hyp-row"><span class="hyp-name">${h.driver_type || h.category || '?'}</span><div class="hyp-meta"><span>${h.net_support_score ?? h.score ?? '—'}</span><span>S:${h.support_count ?? 0} R:${h.refutation_count ?? 0}</span>${tag}</div></div>${h.description || h.ticket_summary ? `<div class="hyp-desc">${h.description || h.ticket_summary}</div>` : ''}</div>`;
+    return `<div class="hyp ${cls}"><div class="hyp-row"><span class="hyp-name">${h.driver_type || h.category || '?'}</span><div class="hyp-meta"><span title="Net support score (support - refutation + dept weight)">${h.net_support_score ?? h.score ?? '—'}</span><span title="Evidence supporting vs contradicting">S:${h.support_count ?? 0} R:${h.refutation_count ?? 0}</span>${tag}</div></div>${h.description || h.ticket_summary ? `<div class="hyp-desc">${h.description || h.ticket_summary}</div>` : ''}</div>`;
   }).join('') : '<div style="color:var(--dim);font-size:13px">No hypotheses generated.</div>';
 
   const c = d.confidence || {};
   document.getElementById('confBox').innerHTML = `
     <div class="conf-grid">
-      <div class="conf-cell"><div class="conf-val">${c.confidence_score != null ? c.confidence_score.toFixed(3) : '—'}</div><div class="conf-label">Overall</div></div>
-      <div class="conf-cell"><div class="conf-val">${c.agreement_score != null ? c.agreement_score.toFixed(3) : '—'}</div><div class="conf-label">Agreement</div></div>
-      <div class="conf-cell"><div class="conf-val">${c.match_strength != null ? c.match_strength.toFixed(3) : '—'}</div><div class="conf-label">Match</div></div>
-      <div class="conf-cell"><div class="conf-val">${c.self_consistency != null ? c.self_consistency.toFixed(3) : '—'}</div><div class="conf-label">Consistency</div></div>
+      <div class="conf-cell"><div class="conf-val">${c.confidence_score != null ? c.confidence_score.toFixed(3) : '—'}</div><div class="conf-label">Overall</div><div class="conf-tip">Weighted: 0.4 agreement + 0.25 match + 0.35 consistency</div></div>
+      <div class="conf-cell"><div class="conf-val">${c.agreement_score != null ? c.agreement_score.toFixed(3) : '—'}</div><div class="conf-label">Agreement</div><div class="conf-tip">How well evidence agrees with itself</div></div>
+      <div class="conf-cell"><div class="conf-val">${c.match_strength != null ? c.match_strength.toFixed(3) : '—'}</div><div class="conf-label">Match</div><div class="conf-tip">How strongly evidence matches this case</div></div>
+      <div class="conf-cell"><div class="conf-val">${c.self_consistency != null ? c.self_consistency.toFixed(3) : '—'}</div><div class="conf-label">Consistency</div><div class="conf-tip">Same answer across 3 rephrased queries?</div></div>
     </div>
     ${c.abstention_reason ? `<div class="abstain-note">${c.abstention_reason}</div>` : ''}`;
 
