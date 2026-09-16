@@ -4,176 +4,191 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KPI Intelligence Engine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0f1117; --surface: #1a1d27; --border: #2a2d3a;
-    --text: #e4e4e7; --muted: #71717a; --accent: #6366f1;
-    --green: #22c55e; --yellow: #eab308; --red: #ef4444; --orange: #f97316;
-    --blue: #3b82f6;
+    --bg: #09090b; --surface: #18181b; --surface-2: #1f1f23; --border: #27272a;
+    --text: #fafafa; --muted: #a1a1aa; --dim: #52525b;
+    --accent: #818cf8; --accent-dim: rgba(129,140,248,0.12);
+    --green: #4ade80; --green-dim: rgba(74,222,128,0.1);
+    --yellow: #facc15; --yellow-dim: rgba(250,204,21,0.1);
+    --red: #f87171; --red-dim: rgba(248,113,113,0.1);
+    --blue: #60a5fa; --blue-dim: rgba(96,165,250,0.1);
+    --orange: #fb923c;
+    --radius: 10px; --radius-sm: 6px;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace; background: var(--bg); color: var(--text); min-height: 100vh; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+  ::selection { background: var(--accent); color: #000; }
 
-  header { padding: 24px 32px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 16px; }
-  header h1 { font-size: 18px; font-weight: 600; }
-  header span { color: var(--muted); font-size: 13px; }
-  .badge { background: var(--accent); color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+  /* ── Header ── */
+  header { padding: 20px 32px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 14px; position: sticky; top: 0; background: var(--bg); z-index: 10; backdrop-filter: blur(12px); }
+  header h1 { font-size: 16px; font-weight: 600; letter-spacing: -0.3px; }
+  .badge { background: var(--accent); color: #000; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+  header .sep { color: var(--dim); }
+  header .subtitle { color: var(--muted); font-size: 13px; }
 
-  .container { max-width: 1100px; margin: 0 auto; padding: 32px; }
+  /* ── Layout ── */
+  .container { max-width: 960px; margin: 0 auto; padding: 28px 24px 64px; }
 
-  .controls { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 24px; margin-bottom: 24px; }
-  .controls h2 { font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
-  .form-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end; }
-  .form-group { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 160px; }
-  .form-group label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
-  .form-group input[type="date"] { color-scheme: dark; }
+  /* ── Controls ── */
+  .controls { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 24px; }
+  .controls-label { font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; margin-bottom: 16px; }
+  .form-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 140px; }
+  .form-group label { font-size: 12px; color: var(--muted); font-weight: 500; }
   .form-group input, .form-group select {
     background: var(--bg); border: 1px solid var(--border); color: var(--text);
-    padding: 10px 12px; border-radius: 6px; font-family: inherit; font-size: 14px;
+    padding: 9px 12px; border-radius: var(--radius-sm); font-family: inherit; font-size: 13px;
+    transition: border-color 0.15s;
   }
   .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--accent); }
+  .form-group input[type="date"] { color-scheme: dark; }
+  .form-group .hint { font-size: 11px; color: var(--dim); cursor: pointer; }
+  .form-group .hint:hover { color: var(--muted); }
+
   .btn {
-    background: var(--accent); color: #fff; border: none; padding: 10px 24px;
-    border-radius: 6px; font-family: inherit; font-size: 14px; font-weight: 600;
-    cursor: pointer; white-space: nowrap; transition: opacity 0.2s;
+    background: var(--accent); color: #000; border: none; padding: 9px 22px;
+    border-radius: var(--radius-sm); font-family: inherit; font-size: 13px; font-weight: 600;
+    cursor: pointer; white-space: nowrap; transition: all 0.15s;
   }
-  .btn:hover { opacity: 0.85; }
-  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
 
-  .loading { display: none; text-align: center; padding: 48px; color: var(--muted); }
+  /* ── Loading ── */
+  .loading { display: none; text-align: center; padding: 56px 0; }
   .loading.active { display: block; }
-  .spinner { display: inline-block; width: 24px; height: 24px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 12px; }
+  .spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; margin-bottom: 14px; }
   @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { color: var(--muted); font-size: 13px; }
 
+  /* ── Result ── */
   .result { display: none; }
-  .result.active { display: block; }
+  .result.active { display: block; animation: fadeUp 0.3s ease; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-  .section { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 16px; }
-  .section-title { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-  .section-title .dot { width: 8px; height: 8px; border-radius: 50%; }
+  /* ── Status Chips ── */
+  .status-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+  .chip { padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid transparent; }
+  .chip-green { background: var(--green-dim); border-color: rgba(74,222,128,0.25); color: var(--green); }
+  .chip-yellow { background: var(--yellow-dim); border-color: rgba(250,204,21,0.25); color: var(--yellow); }
+  .chip-blue { background: var(--blue-dim); border-color: rgba(96,165,250,0.25); color: var(--blue); }
+  .chip-red { background: var(--red-dim); border-color: rgba(248,113,113,0.25); color: var(--red); }
+  .chip-muted { background: var(--surface-2); border-color: var(--border); color: var(--muted); }
 
-  .status-bar { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
-  .status-chip { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid; }
-  .chip-material { background: rgba(34,197,94,0.1); border-color: var(--green); color: var(--green); }
-  .chip-not-material { background: rgba(113,113,122,0.1); border-color: var(--muted); color: var(--muted); }
-  .chip-abstain { background: rgba(234,179,8,0.1); border-color: var(--yellow); color: var(--yellow); }
-  .chip-high { background: rgba(34,197,94,0.15); border-color: var(--green); color: var(--green); }
-  .chip-medium { background: rgba(59,130,246,0.15); border-color: var(--blue); color: var(--blue); }
-  .chip-low { background: rgba(249,115,22,0.15); border-color: var(--orange); color: var(--orange); }
-  .chip-abstain-conf { background: rgba(234,179,8,0.15); border-color: var(--yellow); color: var(--yellow); }
+  /* ── Section ── */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; margin-bottom: 14px; }
+  .card-title { font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .card-title .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
 
-  .hypothesis-card { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 14px; margin-bottom: 10px; }
-  .hypothesis-card.winner { border-color: var(--green); }
-  .hypothesis-card.refuted { border-color: var(--red); opacity: 0.6; }
-  .hyp-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-  .hyp-type { font-size: 13px; font-weight: 600; }
-  .hyp-score { font-size: 12px; color: var(--muted); }
-  .hyp-detail { font-size: 12px; color: var(--muted); line-height: 1.6; }
-  .hyp-badge { font-size: 10px; padding: 2px 6px; border-radius: 3px; font-weight: 700; text-transform: uppercase; }
-  .badge-winner { background: var(--green); color: #000; }
-  .badge-refuted { background: var(--red); color: #fff; }
+  /* ── Stats Grid ── */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border-radius: var(--radius-sm); overflow: hidden; margin-bottom: 16px; }
+  .stat { background: var(--surface); padding: 16px 12px; text-align: center; }
+  .stat-val { font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 700; color: var(--accent); }
+  .stat-label { font-size: 11px; color: var(--dim); margin-top: 4px; }
 
-  .rec-box { background: var(--bg); border: 1px solid var(--green); border-radius: 6px; padding: 16px; }
-  .rec-box.unavailable { border-color: var(--muted); }
-  .rec-row { display: flex; gap: 8px; margin-bottom: 6px; font-size: 13px; }
-  .rec-label { color: var(--muted); min-width: 100px; }
+  /* ── Steps ── */
+  .steps { display: flex; gap: 6px; flex-wrap: wrap; }
+  .step { background: var(--surface-2); border: 1px solid var(--border); padding: 4px 10px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); }
 
-  .narrative-box { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 14px; margin-bottom: 10px; }
-  .narrative-label { font-size: 11px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; font-weight: 600; }
-  .narrative-text { font-size: 13px; line-height: 1.7; }
+  /* ── Hypotheses ── */
+  .hyp { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; margin-bottom: 8px; transition: border-color 0.15s; }
+  .hyp:last-child { margin-bottom: 0; }
+  .hyp.winner { border-color: rgba(74,222,128,0.4); background: rgba(74,222,128,0.03); }
+  .hyp.refuted { opacity: 0.45; }
+  .hyp-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .hyp-name { font-size: 13px; font-weight: 600; }
+  .hyp-meta { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--dim); display: flex; gap: 10px; flex-shrink: 0; }
+  .hyp-desc { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.6; }
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; }
+  .tag-win { background: var(--green); color: #000; }
+  .tag-ref { background: var(--red); color: #fff; }
 
-  .steps-list { display: flex; gap: 6px; flex-wrap: wrap; }
-  .step-chip { background: var(--bg); border: 1px solid var(--border); padding: 4px 10px; border-radius: 4px; font-size: 11px; color: var(--muted); }
+  /* ── Confidence ── */
+  .conf-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+  .conf-cell { background: var(--surface); padding: 14px 10px; text-align: center; }
+  .conf-val { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 700; }
+  .conf-label { font-size: 10px; color: var(--dim); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .abstain-note { margin-top: 12px; padding: 10px 14px; background: var(--yellow-dim); border: 1px solid rgba(250,204,21,0.2); border-radius: var(--radius-sm); font-size: 12px; color: var(--yellow); }
 
-  .error-box { background: rgba(239,68,68,0.1); border: 1px solid var(--red); border-radius: 6px; padding: 16px; color: var(--red); font-size: 13px; display: none; }
-  .error-box.active { display: block; }
+  /* ── Recommendation ── */
+  .rec { background: var(--surface-2); border: 1px solid rgba(74,222,128,0.3); border-radius: var(--radius-sm); padding: 18px; }
+  .rec.none { border-color: var(--border); }
+  .rec-row { display: flex; gap: 12px; margin-bottom: 8px; font-size: 13px; line-height: 1.5; }
+  .rec-row:last-child { margin-bottom: 0; }
+  .rec-key { color: var(--dim); min-width: 90px; font-weight: 500; flex-shrink: 0; }
 
-  .meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
-  .meta-item { text-align: center; }
-  .meta-val { font-size: 22px; font-weight: 700; color: var(--accent); }
-  .meta-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  /* ── Narratives ── */
+  .nar { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 8px; }
+  .nar:last-child { margin-bottom: 0; }
+  .nar-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .nar-role { font-size: 11px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+  .nar-src { font-size: 10px; color: var(--dim); font-family: 'JetBrains Mono', monospace; }
+  .nar-text { font-size: 13px; line-height: 1.75; color: var(--text); }
+
+  /* ── Error ── */
+  .error { background: var(--red-dim); border: 1px solid rgba(248,113,113,0.3); border-radius: var(--radius-sm); padding: 14px 18px; color: var(--red); font-size: 13px; display: none; margin-bottom: 14px; }
+  .error.active { display: block; }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    .stats, .conf-grid { grid-template-columns: repeat(2, 1fr); }
+    .form-row { flex-direction: column; }
+    .form-group { min-width: 100%; }
+    header { padding: 16px; }
+    .container { padding: 20px 16px; }
+  }
 </style>
 </head>
 <body>
 
 <header>
   <h1>KPI Intelligence Engine</h1>
-  <span class="badge">DEMO</span>
-  <span>Case File Investigation Console</span>
+  <span class="badge">Demo</span>
+  <span class="sep">/</span>
+  <span class="subtitle">Investigation Console</span>
 </header>
 
 <div class="container">
   <div class="controls">
-    <h2>New Investigation</h2>
+    <div class="controls-label">New Investigation</div>
     <div class="form-row">
       <div class="form-group">
         <label>Scenario</label>
-        <select id="scenarioSelect"><option value="">Loading scenarios...</option></select>
+        <select id="scenarioSelect"><option value="">Loading...</option></select>
       </div>
-      <div class="form-group" style="max-width:100px">
+      <div class="form-group" style="max-width:90px">
         <label>Store</label>
         <input type="number" id="storeInput" placeholder="18">
       </div>
-      <div class="form-group" style="max-width:100px">
+      <div class="form-group" style="max-width:90px">
         <label>Dept</label>
-        <input type="number" id="deptInput" placeholder="optional">
+        <input type="number" id="deptInput" placeholder="opt">
       </div>
-      <div class="form-group" style="max-width:180px">
-        <label>Target Date</label>
+      <div class="form-group" style="max-width:170px">
+        <label>Date</label>
         <input type="date" id="dateInput">
-        <span style="font-size:11px;color:var(--muted);cursor:pointer" onclick="clearDate()">clear</span>
+        <span class="hint" onclick="document.getElementById('dateInput').value=''">clear</span>
       </div>
-      <div class="form-group" style="max-width:120px">
+      <div class="form-group" style="max-width:110px;min-width:110px">
         <label>&nbsp;</label>
         <button class="btn" id="runBtn" onclick="runInvestigation()">Investigate</button>
       </div>
     </div>
   </div>
 
-  <div class="error-box" id="errorBox"></div>
-
-  <div class="loading" id="loadingBox">
-    <div class="spinner"></div>
-    <div>Running diagnostic pipeline...</div>
-  </div>
+  <div class="error" id="errorBox"></div>
+  <div class="loading" id="loadingBox"><div class="spinner"></div><div class="loading-text">Running diagnostic pipeline...</div></div>
 
   <div class="result" id="resultBox">
-    <!-- Status Bar -->
     <div class="status-bar" id="statusBar"></div>
-
-    <!-- Pipeline Overview -->
-    <div class="section">
-      <div class="section-title"><span class="dot" style="background:var(--accent)"></span>Pipeline Overview</div>
-      <div class="meta-grid" id="metaGrid"></div>
-      <div style="margin-top:12px">
-        <div class="section-title" style="margin-bottom:8px">Steps Executed</div>
-        <div class="steps-list" id="stepsList"></div>
-      </div>
-    </div>
-
-    <!-- Hypotheses -->
-    <div class="section">
-      <div class="section-title"><span class="dot" style="background:var(--blue)"></span>Hypotheses Evaluated</div>
-      <div id="hypothesesList"></div>
-    </div>
-
-    <!-- Confidence -->
-    <div class="section">
-      <div class="section-title"><span class="dot" style="background:var(--yellow)"></span>Confidence Assessment</div>
-      <div id="confidenceDetails"></div>
-    </div>
-
-    <!-- Recommendation -->
-    <div class="section">
-      <div class="section-title"><span class="dot" style="background:var(--green)"></span>Recommendation</div>
-      <div id="recommendationBox"></div>
-    </div>
-
-    <!-- Narratives -->
-    <div class="section">
-      <div class="section-title"><span class="dot" style="background:var(--orange)"></span>Persona Narratives</div>
-      <div id="narrativesBox"></div>
-    </div>
+    <div class="card" id="overviewCard"><div class="card-title"><span class="dot" style="background:var(--accent)"></span>Overview</div><div class="stats" id="statsGrid"></div><div class="steps" id="stepsList"></div></div>
+    <div class="card"><div class="card-title"><span class="dot" style="background:var(--blue)"></span>Hypotheses</div><div id="hypList"></div></div>
+    <div class="card"><div class="card-title"><span class="dot" style="background:var(--yellow)"></span>Confidence</div><div id="confBox"></div></div>
+    <div class="card"><div class="card-title"><span class="dot" style="background:var(--green)"></span>Recommendation</div><div id="recBox"></div></div>
+    <div class="card"><div class="card-title"><span class="dot" style="background:var(--orange)"></span>Narratives</div><div id="narBox"></div></div>
   </div>
 </div>
 
@@ -185,16 +200,14 @@ async function loadScenarios() {
     const res = await fetch(`${API}/api/stores`);
     const data = await res.json();
     const sel = document.getElementById('scenarioSelect');
-    sel.innerHTML = '<option value="">-- pick a demo scenario --</option>';
+    sel.innerHTML = '<option value="">Pick a scenario...</option>';
     data.scenarios.forEach(s => {
-      const opt = document.createElement('option');
-      opt.value = JSON.stringify(s);
-      opt.textContent = `Store ${s.store} — ${s.label}`;
-      sel.appendChild(opt);
+      const o = document.createElement('option');
+      o.value = JSON.stringify(s);
+      o.textContent = `Store ${s.store} — ${s.label}`;
+      sel.appendChild(o);
     });
-  } catch (e) {
-    document.getElementById('scenarioSelect').innerHTML = '<option value="">API not running</option>';
-  }
+  } catch { document.getElementById('scenarioSelect').innerHTML = '<option value="">API not running</option>'; }
 }
 
 document.getElementById('scenarioSelect').addEventListener('change', function() {
@@ -205,129 +218,79 @@ document.getElementById('scenarioSelect').addEventListener('change', function() 
   document.getElementById('dateInput').value = s.target_date || '';
 });
 
-function clearDate() {
-  document.getElementById('dateInput').value = '';
-}
-
 async function runInvestigation() {
   const store = parseInt(document.getElementById('storeInput').value);
   if (!store) return;
-
   const dept = document.getElementById('deptInput').value ? parseInt(document.getElementById('deptInput').value) : null;
   const date = document.getElementById('dateInput').value || null;
 
-  document.getElementById('errorBox').className = 'error-box';
+  document.getElementById('errorBox').className = 'error';
   document.getElementById('resultBox').className = 'result';
   document.getElementById('loadingBox').className = 'loading active';
   document.getElementById('runBtn').disabled = true;
 
   try {
     const res = await fetch(`${API}/api/investigate`, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      method: 'POST', headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ store, dept, target_date: date, use_llm: true }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.detail || 'Investigation failed');
-    renderResult(data);
+    render(data);
   } catch (e) {
-    document.getElementById('errorBox').textContent = `Error: ${e.message}`;
-    document.getElementById('errorBox').className = 'error-box active';
+    document.getElementById('errorBox').textContent = e.message;
+    document.getElementById('errorBox').className = 'error active';
   } finally {
     document.getElementById('loadingBox').className = 'loading';
     document.getElementById('runBtn').disabled = false;
   }
 }
 
-function renderResult(d) {
-  // Status chips
-  const bar = document.getElementById('statusBar');
+function render(d) {
   const mat = d.materiality?.verdict || d.status;
-  const matClass = mat === 'MATERIAL' ? 'chip-material' : mat === 'ABSTAIN' ? 'chip-abstain' : 'chip-not-material';
   const tier = d.confidence?.confidence_tier || 'N/A';
-  const tierClass = tier === 'HIGH' ? 'chip-high' : tier === 'MEDIUM' ? 'chip-medium' : tier === 'LOW' ? 'chip-low' : 'chip-abstain-conf';
-  bar.innerHTML = `
-    <span class="status-chip ${matClass}">${mat}</span>
-    <span class="status-chip ${tierClass}">Confidence: ${tier}</span>
-    <span class="status-chip" style="border-color:var(--muted);color:var(--muted)">Store ${d.store}</span>
-  `;
+  const matCls = mat === 'MATERIAL' ? 'chip-green' : mat === 'ABSTAIN' ? 'chip-yellow' : 'chip-muted';
+  const tierCls = tier === 'HIGH' ? 'chip-green' : tier === 'MEDIUM' ? 'chip-blue' : tier === 'LOW' ? 'chip-red' : 'chip-yellow';
 
-  // Meta grid
-  const matResult = d.materiality || {};
-  document.getElementById('metaGrid').innerHTML = `
-    <div class="meta-item"><div class="meta-val">${d.steps_taken?.length || 0}</div><div class="meta-label">Steps Run</div></div>
-    <div class="meta-item"><div class="meta-val">${d.hypotheses?.length || 0}</div><div class="meta-label">Hypotheses</div></div>
-    <div class="meta-item"><div class="meta-val">${d.confidence?.confidence_score != null ? d.confidence.confidence_score.toFixed(2) : '—'}</div><div class="meta-label">Score</div></div>
-    <div class="meta-item"><div class="meta-val">${d.concentration_pattern || '—'}</div><div class="meta-label">Pattern</div></div>
-  `;
+  document.getElementById('statusBar').innerHTML = `
+    <span class="chip ${matCls}">${mat}</span>
+    <span class="chip ${tierCls}">${tier} confidence</span>
+    <span class="chip chip-muted">Store ${d.store}${d.dept ? ' / Dept ' + d.dept : ''}</span>`;
 
-  // Steps
-  document.getElementById('stepsList').innerHTML = (d.steps_taken || []).map(s => `<span class="step-chip">${s}</span>`).join('');
+  document.getElementById('statsGrid').innerHTML = `
+    <div class="stat"><div class="stat-val">${d.steps_taken?.length || 0}</div><div class="stat-label">Steps</div></div>
+    <div class="stat"><div class="stat-val">${d.hypotheses?.length || 0}</div><div class="stat-label">Hypotheses</div></div>
+    <div class="stat"><div class="stat-val">${d.confidence?.confidence_score != null ? d.confidence.confidence_score.toFixed(2) : '—'}</div><div class="stat-label">Score</div></div>
+    <div class="stat"><div class="stat-val" style="font-size:13px">${d.concentration_pattern || '—'}</div><div class="stat-label">Pattern</div></div>`;
 
-  // Hypotheses
-  const hypDiv = document.getElementById('hypothesesList');
-  if (!d.hypotheses?.length) {
-    hypDiv.innerHTML = '<div style="color:var(--muted);font-size:13px">No hypotheses generated.</div>';
-  } else {
-    hypDiv.innerHTML = d.hypotheses.map(h => {
-      const isWinner = h.is_winning;
-      const isRefuted = h.refuted;
-      const cls = isWinner ? 'winner' : isRefuted ? 'refuted' : '';
-      const badge = isWinner ? '<span class="hyp-badge badge-winner">WINNER</span>' : isRefuted ? '<span class="hyp-badge badge-refuted">REFUTED</span>' : '';
-      return `
-        <div class="hypothesis-card ${cls}">
-          <div class="hyp-header">
-            <span class="hyp-type">${h.driver_type || h.category || 'Unknown'}</span>
-            <span class="hyp-score">Score: ${h.net_support_score ?? h.score ?? '—'} | Support: ${h.support_count ?? 0} | Refute: ${h.refutation_count ?? 0}</span>
-            ${badge}
-          </div>
-          <div class="hyp-detail">
-            ${h.description || h.ticket_summary || ''}
-            ${h.contributing_departments?.length ? '<br>Depts: ' + h.contributing_departments.join(', ') : ''}
-          </div>
-        </div>`;
-    }).join('');
-  }
+  document.getElementById('stepsList').innerHTML = (d.steps_taken || []).map(s => `<span class="step">${s}</span>`).join('');
 
-  // Confidence
-  const conf = d.confidence || {};
-  document.getElementById('confidenceDetails').innerHTML = `
-    <div class="meta-grid" style="margin-bottom:12px">
-      <div class="meta-item"><div class="meta-val">${conf.confidence_score != null ? conf.confidence_score.toFixed(3) : '—'}</div><div class="meta-label">Overall Score</div></div>
-      <div class="meta-item"><div class="meta-val">${conf.agreement_score != null ? conf.agreement_score.toFixed(3) : '—'}</div><div class="meta-label">Agreement</div></div>
-      <div class="meta-item"><div class="meta-val">${conf.match_strength != null ? conf.match_strength.toFixed(3) : '—'}</div><div class="meta-label">Match Strength</div></div>
-      <div class="meta-item"><div class="meta-val">${conf.self_consistency != null ? conf.self_consistency.toFixed(3) : '—'}</div><div class="meta-label">Self-Consistency</div></div>
+  const hyps = d.hypotheses || [];
+  document.getElementById('hypList').innerHTML = hyps.length ? hyps.map(h => {
+    const cls = h.is_winning ? 'winner' : h.refuted ? 'refuted' : '';
+    const tag = h.is_winning ? '<span class="tag tag-win">Winner</span>' : h.refuted ? '<span class="tag tag-ref">Refuted</span>' : '';
+    return `<div class="hyp ${cls}"><div class="hyp-row"><span class="hyp-name">${h.driver_type || h.category || '?'}</span><div class="hyp-meta"><span>${h.net_support_score ?? h.score ?? '—'}</span><span>S:${h.support_count ?? 0} R:${h.refutation_count ?? 0}</span>${tag}</div></div>${h.description || h.ticket_summary ? `<div class="hyp-desc">${h.description || h.ticket_summary}</div>` : ''}</div>`;
+  }).join('') : '<div style="color:var(--dim);font-size:13px">No hypotheses generated.</div>';
+
+  const c = d.confidence || {};
+  document.getElementById('confBox').innerHTML = `
+    <div class="conf-grid">
+      <div class="conf-cell"><div class="conf-val">${c.confidence_score != null ? c.confidence_score.toFixed(3) : '—'}</div><div class="conf-label">Overall</div></div>
+      <div class="conf-cell"><div class="conf-val">${c.agreement_score != null ? c.agreement_score.toFixed(3) : '—'}</div><div class="conf-label">Agreement</div></div>
+      <div class="conf-cell"><div class="conf-val">${c.match_strength != null ? c.match_strength.toFixed(3) : '—'}</div><div class="conf-label">Match</div></div>
+      <div class="conf-cell"><div class="conf-val">${c.self_consistency != null ? c.self_consistency.toFixed(3) : '—'}</div><div class="conf-label">Consistency</div></div>
     </div>
-    ${conf.abstention_reason ? `<div style="color:var(--yellow);font-size:12px">Abstention reason: ${conf.abstention_reason}</div>` : ''}
-  `;
+    ${c.abstention_reason ? `<div class="abstain-note">${c.abstention_reason}</div>` : ''}`;
 
-  // Recommendation
-  const rec = d.recommendation || {};
-  const recBox = document.getElementById('recommendationBox');
-  if (rec.recommendation_available) {
-    recBox.innerHTML = `
-      <div class="rec-box">
-        <div class="rec-row"><span class="rec-label">Driver</span>${rec.driver}</div>
-        <div class="rec-row"><span class="rec-label">Action</span>${rec.action}</div>
-        <div class="rec-row"><span class="rec-label">Owner</span>${rec.owner}</div>
-        <div class="rec-row"><span class="rec-label">Impact</span>${rec.expected_impact}</div>
-        <div class="rec-row"><span class="rec-label">Monitoring</span>${rec.monitoring_plan}</div>
-      </div>`;
-  } else {
-    recBox.innerHTML = `<div class="rec-box unavailable"><div style="color:var(--muted)">No recommendation — ${rec.reason || 'confidence insufficient'}</div></div>`;
-  }
+  const r = d.recommendation || {};
+  document.getElementById('recBox').innerHTML = r.recommendation_available
+    ? `<div class="rec"><div class="rec-row"><span class="rec-key">Driver</span>${r.driver}</div><div class="rec-row"><span class="rec-key">Action</span>${r.action}</div><div class="rec-row"><span class="rec-key">Owner</span>${r.owner}</div><div class="rec-row"><span class="rec-key">Impact</span>${r.expected_impact}</div><div class="rec-row"><span class="rec-key">Monitor</span>${r.monitoring_plan}</div></div>`
+    : `<div class="rec none"><span style="color:var(--muted)">No recommendation — ${r.reason || 'confidence insufficient'}</span></div>`;
 
-  // Narratives
-  const nar = d.narratives || {};
-  document.getElementById('narrativesBox').innerHTML = `
-    <div class="narrative-box">
-      <div class="narrative-label">Store Manager ${nar._meta?.store_manager_source ? '(' + nar._meta.store_manager_source + ')' : ''}</div>
-      <div class="narrative-text">${nar.store_manager || '—'}</div>
-    </div>
-    <div class="narrative-box">
-      <div class="narrative-label">Regional VP ${nar._meta?.regional_vp_source ? '(' + nar._meta.regional_vp_source + ')' : ''}</div>
-      <div class="narrative-text">${nar.regional_vp || '—'}</div>
-    </div>`;
+  const n = d.narratives || {};
+  document.getElementById('narBox').innerHTML = `
+    <div class="nar"><div class="nar-head"><span class="nar-role">Store Manager</span><span class="nar-src">${n._meta?.store_manager_source || 'template'}</span></div><div class="nar-text">${n.store_manager || '—'}</div></div>
+    <div class="nar"><div class="nar-head"><span class="nar-role">Regional VP</span><span class="nar-src">${n._meta?.regional_vp_source || 'template'}</span></div><div class="nar-text">${n.regional_vp || '—'}</div></div>`;
 
   document.getElementById('resultBox').className = 'result active';
 }
