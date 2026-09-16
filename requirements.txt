@@ -1,0 +1,33 @@
+# Agent orchestration
+langgraph
+langchain
+langchain-core
+langchain-community
+
+# LLM provider
+openai
+python-dotenv
+
+# RAG / retrieval
+chromadb
+sentence-transformers
+rank-bm25
+
+# Data / stats
+pandas
+numpy
+statsmodels
+scipy
+pyyaml
+
+# SQL layer
+sqlalchemy
+
+# API
+fastapi
+uvicorn
+pydantic
+
+# Utilities
+tiktoken
+anthropic
