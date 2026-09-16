@@ -282,9 +282,31 @@ document.getElementById('scenarioSelect').addEventListener('change', function() 
 });
 
 async function runInvestigation() {
-  const store = parseInt(document.getElementById('storeInput').value);
-  if (!store) return;
-  const dept = document.getElementById('deptInput').value ? parseInt(document.getElementById('deptInput').value) : null;
+  const storeVal = document.getElementById('storeInput').value.trim();
+  const deptVal = document.getElementById('deptInput').value.trim();
+  const store = parseInt(storeVal);
+  const dept = deptVal ? parseInt(deptVal) : null;
+
+  // ── Validation ──
+  const err = document.getElementById('errorBox');
+  if (!storeVal || isNaN(store)) {
+    err.textContent = 'Store ID is required. Enter a number between 1 and 45.';
+    err.className = 'error active'; return;
+  }
+  if (store < 1 || store > 45) {
+    err.textContent = `Store ${store} is invalid. Valid range: 1–45 (dataset has 45 stores).`;
+    err.className = 'error active'; return;
+  }
+  if (deptVal && (isNaN(dept) || dept === null)) {
+    err.textContent = 'Dept must be a number. Leave empty to investigate at store level.';
+    err.className = 'error active'; return;
+  }
+  if (dept !== null && (dept < 1 || dept > 81)) {
+    err.textContent = `Dept ${dept} is invalid. Valid range: 1–81 (dataset has 81 departments).`;
+    err.className = 'error active'; return;
+  }
+  err.className = 'error';
+
   const date = document.getElementById('dateInput').value || null;
 
   document.getElementById('errorBox').className = 'error';
@@ -359,6 +381,23 @@ function render(d) {
 }
 
 loadScenarios();
+
+// ── Inline validation on blur ──
+document.getElementById('storeInput').addEventListener('blur', function() {
+  const v = parseInt(this.value);
+  if (this.value.trim() && (isNaN(v) || v < 1 || v > 45)) {
+    this.style.borderColor = 'var(--red)';
+  } else { this.style.borderColor = ''; }
+});
+document.getElementById('deptInput').addEventListener('blur', function() {
+  const v = parseInt(this.value);
+  if (this.value.trim() && (isNaN(v) || v < 1 || v > 81)) {
+    this.style.borderColor = 'var(--red)';
+  } else { this.style.borderColor = ''; }
+});
+// Reset border on focus
+document.getElementById('storeInput').addEventListener('focus', function() { this.style.borderColor = ''; });
+document.getElementById('deptInput').addEventListener('focus', function() { this.style.borderColor = ''; });
 </script>
 </body>
 </html>
